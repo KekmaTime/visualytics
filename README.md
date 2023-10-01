@@ -19,7 +19,6 @@ This project implements a COVID-19 dashboard using Streamlit, displaying various
 
 ## Features
 
-- Displays COVID-19 metrics including temperature, wind, and humidity.
 - Provides a donut chart illustrating COVID-19 data for a selected state/Union Territory.
 - Allows users to customize chart parameters such as data selection and plot height.
 - Clean and responsive user interface.
