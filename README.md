@@ -68,5 +68,5 @@ This project is licensed under the [GNU General Public License](https://github.c
 ## Acknowledgements
 
 - This project utilizes Streamlit, a powerful tool for creating web applications for machine learning and data science.
-- The COVID-19 data used in this project is sourced from [your data source here] (replace with appropriate data source).
+- The COVID-19 data used in this project is sourced from Kaggle.
 - Special thanks to Ayush Kumar for the collaboration of this dashboard.
