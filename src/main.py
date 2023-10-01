@@ -1,11 +1,53 @@
 import streamlit as st
 import pandas as pd
+import plost
 
-def load_data():
-    df = pd.read_csv('/home/zerocool/git/visualytics/datasets/2/Latest Covid-19 India Status.csv')
-    return df
+st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
-df = load_data()
+with open('../visualytics/src/style.css') as f:
+    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+    
+st.sidebar.header('Dashboard `version 0`')
 
-st.write("Displaying the CSV file:")
-st.write(df)
+st.sidebar.subheader('Covid-19 parameters')
+
+#Load data
+state_wise = pd.read_csv('../visualytics/datasets/2/state_wise.csv')
+
+# Get selected state
+selected_state = st.sidebar.selectbox('Select `state/UTs`', state_wise['State/UTs'].unique())
+
+st.sidebar.subheader('Donut chart parameter')
+donut_theta = st.sidebar.selectbox('Select data', ('q2', 'q3'))
+
+st.sidebar.subheader('Line chart parameters')
+plot_data = st.sidebar.multiselect('Select data', ['temp_min', 'temp_max'], ['temp_min', 'temp_max'])
+plot_height = st.sidebar.slider('Specify plot height', 200, 500, 250)
+
+st.sidebar.markdown('''
+---
+Created with ❤️ by Ayush Kumar
+''')
+
+
+# Row A
+st.markdown('### Metrics')
+col1, col2, col3 = st.columns(3)
+col1.metric("Temperature", "70 °F", "1.2 °F")
+col2.metric("Wind", "9 mph", "-8%")
+col3.metric("Humidity", "86%", "4%")
+
+
+# Filter data for selected state
+state_data = state_wise[state_wise['State/UTs'] == selected_state]
+
+c1, c2 = st.columns((7,3))
+
+with c2:
+    st.markdown('### Donut chart')
+    plost.donut_chart(
+        data= state_data,
+        theta= ['Active', 'Discharged', 'Deaths'],
+        color=['#FFA500', '#FFD700', '#FF8C00'],
+        legend='bottom', 
+        use_container_width=True)
