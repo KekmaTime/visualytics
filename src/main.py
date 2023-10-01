@@ -1,53 +1,76 @@
 import streamlit as st
 import pandas as pd
-import plost
+import plotly.express as px
+import os
 
+# Set page config
 st.set_page_config(layout='wide', initial_sidebar_state='expanded')
 
-with open('../visualytics/src/style.css') as f:
-    st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-    
-st.sidebar.header('Dashboard `version 0`')
-
-st.sidebar.subheader('Covid-19 parameters')
-
-#Load data
-state_wise = pd.read_csv('../visualytics/datasets/2/state_wise.csv')
-
-# Get selected state
-selected_state = st.sidebar.selectbox('Select `state/UTs`', state_wise['State/UTs'].unique())
-
-st.sidebar.subheader('Donut chart parameter')
-donut_theta = st.sidebar.selectbox('Select data', ('q2', 'q3'))
-
-st.sidebar.subheader('Line chart parameters')
-plot_data = st.sidebar.multiselect('Select data', ['temp_min', 'temp_max'], ['temp_min', 'temp_max'])
-plot_height = st.sidebar.slider('Specify plot height', 200, 500, 250)
-
+st.sidebar.header('Covid-19 Dashboard')
 st.sidebar.markdown('''
 ---
 Created with ❤️ by Ayush Kumar & Kekma
 ''')
 
+# Directory containing CSV files
+data_dir = "/home/zerocool/git/visualytics/datasets/"
 
-# Row A
-st.markdown('### Metrics')
-col1, col2, col3 = st.columns(3)
-col1.metric("Temperature", "70 °F", "1.2 °F")
-col2.metric("Wind", "9 mph", "-8%")
-col3.metric("Humidity", "86%", "4%")
+# Get list of CSV files
+csv_files = [f for f in os.listdir(data_dir) if f.endswith('.csv')]
 
+# Get selected file from dropdown
+selected_file = st.sidebar.selectbox('Select CSV file', csv_files)
 
-# Filter data for selected state
-state_data = state_wise[state_wise['State/UTs'] == selected_state]
+# Load data
+data_url = os.path.join(data_dir, selected_file)
+df = pd.read_csv(data_url)
 
-c1, c2 = st.columns((7,3))
+# Visualizations for first CSV file
+if selected_file == '1.csv':
+    # Reshape data for line chart
+    df_melt = df.melt(id_vars='Date', value_vars=['Confirmed'], var_name='case', value_name='count')
 
-with c2:
-    st.markdown('### Donut chart')
-    plost.donut_chart(
-        data= state_data,
-        theta= ['Active', 'Discharged', 'Deaths'],
-        color=['#FFA500', '#FFD700', '#FF8C00'],
-        legend='bottom', 
-        use_container_width=True)
+    # Display line chart
+    st.markdown('### Trend of Confirmed Cases over Time')
+    fig = px.line(df_melt, x='Date', y='count', color='case',
+                  title='Trend of Confirmed Cases over Time')
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Reshape data for bar chart
+    df_bar = df.groupby('State/UnionTerritory')['Confirmed'].max().reset_index()
+
+    # Display bar chart
+    st.markdown('### Number of Confirmed Cases by State/UTs')
+    fig = px.bar(df_bar, x='State/UnionTerritory', y='Confirmed',
+                 title='Number of Confirmed Cases by State/UTs')
+    st.plotly_chart(fig, use_container_width=True)
+
+# Visualizations for second CSV file
+elif selected_file == '2.csv':
+    # Reshape data for bar chart
+    df_bar = df[['State/UTs', 'Total Cases']].sort_values('Total Cases', ascending=False)
+
+    # Display bar chart
+    st.markdown('### Number of Total Cases by State/UTs')
+    fig = px.bar(df_bar, x='State/UTs', y='Total Cases',
+                 title='Number of Total Cases by State/UTs')
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Reshape data for scatter plot
+    df_scatter = df[['State/UTs', 'Total Cases', 'Population']]
+    df_scatter['Cases per Million'] = df_scatter['Total Cases'] / (df_scatter['Population'] / 1000000)
+
+    # Display scatter plot
+    st.markdown('### Relationship between Population and Total Cases')
+    fig = px.scatter(df_scatter, x='Population', y='Total Cases', size='Cases per Million',
+                     title='Relationship between Population and Total Cases')
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Reshape data for pie chart
+    df_pie = df[['State/UTs', 'Total Cases']].sort_values('Total Cases', ascending=False).head(10)
+
+    # Display pie chart
+    st.markdown('### Top 10 States with Highest Total Cases')
+    fig = px.pie(df_pie, values='Total Cases', names='State/UTs',
+                 title='Top 10 States with Highest Total Cases')
+    st.plotly_chart(fig, use_container_width=True)
