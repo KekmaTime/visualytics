@@ -31,7 +31,7 @@ This project implements a COVID-19 dashboard using Streamlit, displaying various
 - [Python 3.x](https://www.python.org/doc/)
 - [Streamlit](https://docs.streamlit.io/)
 - [pandas](https://pandas.pydata.org/docs/)
-- [plost](https://github.com/tvst/plost)
+- [plotly](https://github.com/plotly/plotly.py)
 
 ### Installation
 
