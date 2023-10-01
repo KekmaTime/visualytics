@@ -28,10 +28,10 @@ This project implements a COVID-19 dashboard using Streamlit, displaying various
 
 ### Prerequisites
 
-- Python 3.x
-- Streamlit
-- pandas
-- plost
+- [Python 3.x](https://www.python.org/doc/)
+- [Streamlit](https://docs.streamlit.io/)
+- [pandas](https://pandas.pydata.org/docs/)
+- [plost](https://github.com/tvst/plost)
 
 ### Installation
 
