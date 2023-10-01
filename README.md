@@ -46,7 +46,7 @@ This project implements a COVID-19 dashboard using Streamlit, displaying various
 1. Run the Streamlit app:
 
     ```bash
-    streamlit run main.py
+    streamlit run src/main.py
     ```
 
 2. Open the provided URL in your web browser to access the Streamlit dashboard.
